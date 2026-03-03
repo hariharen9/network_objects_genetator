@@ -1,6 +1,6 @@
 {
   "routerTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "Router",
     "metadata": {
       "annotations": {
@@ -8,7 +8,8 @@
       },
       "labels": {
         "Region": "us-south",
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "namespace": "",
       "name": ""
@@ -16,19 +17,13 @@
     "spec": {
       "vpcid": "",
       "routeDistinguisher": "",
-      "addressPrefixes": [
-        "192.62.10.0/24",
-        "192.62.11.0/24"
-      ],
+      "addressPrefixes": ["192.62.10.0/24", "192.62.11.0/24"],
       "serviceGatewayIP": "192.21.23.1",
-      "serviceGatewayStaticRoutes": [
-        "192.21.24.0/24",
-        "192.21.25.0/24"
-      ]
+      "serviceGatewayStaticRoutes": ["192.21.24.0/24", "192.21.25.0/24"]
     }
   },
   "securityGroupTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "SecurityGroup",
     "metadata": {
       "namespace": "",
@@ -39,7 +34,8 @@
       },
       "labels": {
         "ResourceName": "",
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -51,12 +47,18 @@
           "direction": "egress",
           "portMin": 22,
           "portMax": 22
+        },
+        {
+          "uid": "",
+          "protocol": "iana",
+          "direction": "egress",
+          "ianaProtocolNumber": 123
         }
       ]
     }
   },
   "networkACLTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "NetworkACL",
     "metadata": {
       "namespace": "",
@@ -65,7 +67,8 @@
         "description": "network ACL"
       },
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -97,14 +100,15 @@
     }
   },
   "networkTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "Network",
     "metadata": {
       "annotations": {
         "RequestID": ""
       },
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "namespace": "",
       "name": "",
@@ -120,7 +124,7 @@
     }
   },
   "virtualNicTemplate": {
-    "apiVersion": "compute-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "VirtualNic",
     "metadata": {
       "annotations": {
@@ -138,7 +142,8 @@
         "vm_name": "",
         "InstanceID": "",
         "hold-orphan-from-deletion": "true",
-        "selflink": ""
+        "selflink": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -167,13 +172,14 @@
     }
   },
   "routingTableTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "RoutingTable",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -205,13 +211,14 @@
     }
   },
   "ingressRoutingTableTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "RoutingTable",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -228,7 +235,7 @@
     }
   },
   "foreignNetworkTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "Network",
     "metadata": {
       "namespace": "",
@@ -237,7 +244,8 @@
         "RequestID": ""
       },
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -250,13 +258,14 @@
     }
   },
   "loadBalancerTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "LoadBalancer",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -266,13 +275,14 @@
     }
   },
   "lbPoolTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "LBPool",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -290,13 +300,14 @@
     }
   },
   "lbPoolMemberTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "LBPoolMember",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -307,13 +318,14 @@
     }
   },
   "lbListenerTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "LBListener",
     "metadata": {
       "namespace": "",
       "name": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
@@ -326,11 +338,12 @@
     }
   },
   "virtualNetworkInterfaceTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "VirtualNetworkInterface",
     "metadata": {
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "name": "",
       "namespace": "",
@@ -339,14 +352,10 @@
     "spec": {
       "allowIPSpoofing": false,
       "enableInfrastructureNAT": true,
-      "floatingIPs": [
-        "52.118.221.30"
-      ],
+      "floatingIPs": ["52.118.221.30"],
       "networkName": "",
       "primaryReservedIPName": "",
-      "securityGroupNames": [
-        ""
-      ],
+      "securityGroupNames": [""],
       "target": {
         "name": "",
         "type": ""
@@ -354,12 +363,13 @@
     }
   },
   "reservedIPTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "ReservedIP",
     "metadata": {
       "labels": {
         "VPCID": "",
-        "ZoneBitmask": ""
+        "ZoneBitmask": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "name": "",
       "namespace": "",
@@ -375,10 +385,10 @@
     }
   },
   "shareMountTargetTemplate": {
-    "apiVersion": "storageservice-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "ShareMountTarget",
     "metadata": {
-      "annotations":{
+      "annotations": {
         "NetAppInterfaceAddressList": "192.168.1.18",
         "NetAppLIFCIDR": "192.168.0.0/20",
         "V3MountPath": ""
@@ -389,32 +399,23 @@
         "ShareCurrentVersion": "V3SVMShare",
         "VPCID": "",
         "VirtualNetworkInterfaceID": "",
-        "ZoneBitmask": ""
+        "ZoneBitmask": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "name": "",
       "namespace": ""
     },
     "spec": {
-      "eVPNPrefixes": {
-      }
-    },
-    "status":{
-      "netAppInterfaceAddressList": [
-        "192.168.1.18"
-      ],
-      "netAppLIFCIDR": [
-        "192.168.0.0/20"
-      ],
-      "state": "AVAILABLE"
+      "eVPNPrefixes": {}
     }
-
   },
   "endpointGatewayTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "EndpointGateway",
     "metadata": {
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "name": "",
       "namespace": ""
@@ -428,40 +429,40 @@
         {
           "networkName": "",
           "reservedIPName": "",
-          "ipv4": "192.168.1.55",
-          "serviceDestIP": "192.168.21.21"
+          "ipv4": "",
+          "serviceDestIP": ""
         }
       ]
     }
   },
   "networkEndpointTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "NetworkEndpoint",
     "metadata": {
       "name": "",
       "namespace": "",
       "uid": "",
       "labels": {
-        "VPCID": ""
+        "VPCID": "",
+        "hold-orphan-from-deletion": "true",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       }
     },
     "spec": {
       "bandwidthMb": 3000,
-      "networkInterfaceNames": [
-        ""
-      ],
+      "networkInterfaceNames": [""],
       "networkname": "",
       "nodename": "",
       "virtualNetworkInterface": ""
     }
   },
   "networkInterfaceTemplate": {
-    "apiVersion": "networking-yourAPIversion",
+    "apiVersion": "apps/v1",
     "kind": "NetworkInterface",
     "metadata": {
       "ownerReferences": [
         {
-          "apiVersion": "networking-yourAPIversion",
+          "apiVersion": "apps/v1",
           "controller": true,
           "kind": "NetworkEndpoint",
           "name": "",
@@ -472,8 +473,8 @@
         "AvailabilityZone": "testAvailZone",
         "OwnerNamespace": "",
         "VPCID": "",
-        "ResourceGroup": "fakedata119e4a61a3a015eb6d44ebbb",
-        "hold-orphan-from-deletion": "true"
+        "hold-orphan-from-deletion": "true",
+        "app.kubernetes.io/managed-by": "nrs-tool"
       },
       "name": "",
       "namespace": "",
@@ -487,9 +488,68 @@
         "responseHopLimit": 1
       },
       "nodeName": "",
-      "tunnelEndpointIP": "10.22.19.161",
       "virtualNetworkInterface": "",
       "vpcid": ""
+    }
+  },
+  "clusterNetworkTemplate": {
+    "apiVersion": "apps/v1",
+    "kind": "ClusterNetwork",
+    "metadata": {
+      "annotations": {
+        "RequestID": ""
+      },
+      "namespace": "",
+      "name": "",
+      "labels": {
+        "VPCID": "",
+        "Region": "US-south",
+        "app.kubernetes.io/managed-by": "nrs-tool"
+      }
+    },
+    "spec": {
+      "zone": ""
+    }
+  },
+  "publicAddressRangeTemplate": {
+    "apiVersion": "apps/v1",
+    "kind": "PublicAddressRange",
+    "metadata": {
+      "labels": {
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
+      },
+      "name": "",
+      "namespace": ""
+    },
+    "spec": {
+      "cidr": "",
+      "vpcid": "",
+      "zone": ""
+    }
+  },
+  "flowLogTemplate": {
+    "apiVersion": "apps/v1",
+    "kind": "FlowLog",
+    "metadata": {
+      "labels": {
+        "VPCID": "",
+        "app.kubernetes.io/managed-by": "nrs-tool"
+      },
+      "namespace": "",
+      "name": ""
+    },
+    "spec": {
+      "active": true,
+      "cosBucket": {
+        "name": "",
+        "endpoint": ""
+      },
+      "vpcid": "",
+      "target": {
+        "kind": "",
+        "identifier": ""
+      }
     }
   }
 }

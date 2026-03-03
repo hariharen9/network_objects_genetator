@@ -1,0 +1,40 @@
+{
+  "description": "A complete configuration template. Modify values as needed for your specific scenario.",
+  
+  "run_settings": {
+    "action": "create",
+    "environment": "region-1",
+    "namespace": "sim-resources"
+  },
+
+  "creation_parameters": {
+    "sets": 1,
+    "networkcount": 1,
+    "endpointcount": 1,
+    "loadbalancer": false,
+    "saveyaml": false,
+    "apply": false,
+    "batchapply": false,
+    "vnitype": null,
+    "ripcount": 1,
+    "parcount": 0,
+    "xacc_namespace": "xacc-ns",
+    "specificnode": null,
+    "excludenode": null
+  },
+
+  "deletion_parameters": {
+    "force_delete": false,
+    "interactive": false,
+    "delcurr": false
+  },
+
+  "cache_parameters": {
+    "containername": "core-manager"
+  },
+
+  "image_parameters": {
+    "tag": null,
+    "revert": false
+  }
+}

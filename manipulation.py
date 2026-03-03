@@ -4,18 +4,7 @@ import time
 import random
 import resourceGen as rg
 import sys
-
-def print_red(text):
-    print("\033[91m" + str(text) + "\033[0m")
-
-def print_green(text):
-    print("\033[92m" + str(text) + "\033[0m")
-
-def run_command(command):
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    if result.returncode != 0:
-        print(f"{result.stderr.decode('utf-8')}")
-    return result.stdout
+from utils import *
 
 def get_random_valid_line(lines):
     while lines:
@@ -49,62 +38,70 @@ resource_functions = {
     "Foreign Networks": rg.create_foreign_networks,
 }
 
-def create_resources(thread_id):
-    while True:
-        resource_type = random.choice(list(resource_functions.keys()))
-        rg.createResources("manipulation", specificResource=resource_type)
-
-        sleep_duration = random.randint(1, 10)
-        print(f"Thread-{thread_id}:\tSleeping for {sleep_duration} seconds before the next create action...")
-        time.sleep(sleep_duration)
-
-def update_resources(thread_id):
-    while True:
-        with open("./applied_resources.txt", "r") as file:
-            lines = file.readlines()
-            if lines:
-                parts = get_random_valid_line(lines)
-                if parts:
-                    namespace, kind, name = parts
-                    update_resource(namespace, kind, name)
+def update_resources(thread_id, args, shutdown_event):
+    while not shutdown_event.is_set():
+        try:
+            with open("./applied_resources.txt", "r") as file:
+                lines = file.readlines()
+                if lines:
+                    parts = get_random_valid_line(lines)
+                    if parts:
+                        namespace, kind, name = parts
+                        update_resource(namespace, kind, name)
+                    else:
+                        print(f"Thread-{thread_id}:\tNo valid resources to update.")
                 else:
-                    print(f"Thread-{thread_id}:\tNo valid resources to update.")
-            else:
-                print(f"Thread-{thread_id}:\tNo resources to update. File is empty.")
+                    print(f"Thread-{thread_id}:\tNo resources to update. File is empty.")
+        except FileNotFoundError:
+            print(f"Thread-{thread_id}:\t'applied_resources.txt' not found. Skipping update.")
+
 
         sleep_duration = random.randint(1, 10)
         print(f"Thread-{thread_id}:\tSleeping for {sleep_duration} seconds before the next update action...")
-        time.sleep(sleep_duration)
+        shutdown_event.wait(sleep_duration)
 
-def delete_resources(thread_id):
-    while True:
-        with open("./applied_resources.txt", "r") as file:
-            lines = file.readlines()
-            if lines:
-                parts = get_random_valid_line(lines)
-                if parts:
-                    namespace, kind, name = parts
-                    delete_resource(namespace, kind, name)
+def delete_resources(thread_id, args, shutdown_event):
+    while not shutdown_event.is_set():
+        try:
+            with open("./applied_resources.txt", "r") as file:
+                lines = file.readlines()
+                if lines:
+                    parts = get_random_valid_line(lines)
+                    if parts:
+                        namespace, kind, name = parts
+                        delete_resource(namespace, kind, name)
+                    else:
+                        print(f"Thread-{thread_id}:\tNo valid resources to delete.")
                 else:
-                    print(f"Thread-{thread_id}:\tNo valid resources to delete.")
-            else:
-                print(f"Thread-{thread_id}:\tNo resources to update. File is empty.")
+                    print(f"Thread-{thread_id}:\tNo resources to update. File is empty.")
+        except FileNotFoundError:
+            print(f"Thread-{thread_id}:\t'applied_resources.txt' not found. Skipping delete.")
 
         sleep_duration = random.randint(1, 10)
         print(f"Thread-{thread_id}:\tSleeping for {sleep_duration} seconds before the next delete action...")
-        time.sleep(sleep_duration)
+        shutdown_event.wait(sleep_duration)
 
 
-def manipulate():
-    create_thread = threading.Thread(target=create_resources, args=(1,))
-    update_thread = threading.Thread(target=update_resources, args=(2,))
-    delete_thread = threading.Thread(target=delete_resources, args=(3,))
+def manipulate(args):
+    shutdown_event = threading.Event()
+    print_green("Starting manipulation mode, It will keep updating and deleting resources randomly. Press Ctrl+C to stop gracefully.")
 
-    create_thread.start()
-    update_thread.start()
-    delete_thread.start()
+    threads = [
+        threading.Thread(target=update_resources, args=(1, args, shutdown_event)),
+        threading.Thread(target=delete_resources, args=(2, args, shutdown_event))
+    ]
 
-    create_thread.join()
-    update_thread.join()
-    delete_thread.join()
+    for t in threads:
+        t.start()
 
+    try:
+        while any(t.is_alive() for t in threads):
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print_yellow("\nShutdown signal received. Stopping worker threads gracefully...")
+        shutdown_event.set()
+    
+    for t in threads:
+        t.join()
+
+    print_green("All manipulation threads have been stopped.")

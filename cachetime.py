@@ -4,19 +4,7 @@ import sys
 import time
 import os
 import resourceGen as rg
-
-#Helper Functions
-def print_red(text):
-    print("\033[91m" + str(text) + "\033[0m")
-def print_green(text):
-    print("\033[92m" + str(text) + "\033[0m")
-
-def run_command(command):
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    if result.returncode != 0:
-        print(f"{result.stderr.decode('utf-8')}")
-    return result.stdout
-
+from utils import *
 
 def global_get_managers(namespace, container_name):
 
@@ -97,7 +85,7 @@ def extract_sync_messages(input_file_path, output_sync_file_path, pod_name):
     with open(input_file_path, 'r') as input_file, open(output_sync_file_path, 'w') as output_file:
         for line in input_file:
 
-            if "Cache & Fabcon Synchronization" in line or '"MESSAGE":"Synchronized' in line:
+            if "Cache & Backend Synchronization" in line or '"MESSAGE":"Synchronized' in line:
                 output_file.write(line)
                 cache_found = True
 
@@ -209,7 +197,6 @@ def restart_and_extract_logs(namespace, pod_names, container_name):
 
                 extract_sync_messages(f"logs_info/{pod}.logs", f"logs_info/CacheSync_time_of_{pod}.txt", pod)
 
-
 def restart_all_and_extract_logs(namespace, pod_names, container_name):
     print_red("Deleting(Restarting) Managers..")
     print_green(pod_names)
@@ -245,14 +232,13 @@ def restart_all_and_extract_logs(namespace, pod_names, container_name):
 
             extract_sync_messages(f"logs_info/{pod}.logs", f"logs_info/CacheSync_time_of_{pod}.txt", pod)
 
-
 def setup():
     def parse_arguments():
         parser = argparse.ArgumentParser(
             description="CREATE(c) - Script to create Network objects in a cloud environment.\n DELETE(d) - Deletes the created objects\n RESTART(r) - Restarts a POD and makes it ready to fetch the logs from. \n GETLOGS(l) - To Extract the Synchronization logs from the New POD"
         )
         parser.add_argument('action', choices=["r", "restart", "gl", "getlogs", "gc", "getcache"], help="Specify whether to Create/Delete resources or Restart/GetLogs/GetCache from the POD(s). Default is Resource Creation")
-        parser.add_argument('-cn', '--containername', default='fabcon-manager', choices=['fabcon-manager', 'network-manager'], help="Specify the container name to restart/getLogs, Default is \"fabcon-manager\". (For RESTART only)", dest="containername")
+        parser.add_argument('-cn', '--containername', default='core-manager', choices=['core-manager', 'net-manager'], help="Specify the container name to restart/getLogs, Default is \"core-manager\". (For RESTART only)", dest="containername")
 
         args = parser.parse_args()
         return args
@@ -260,7 +246,7 @@ def setup():
     args = parse_arguments()
     global namespace
     global container_name
-    namespace = "genctl"
+    namespace = "sim-ns"
     container_name = args.containername
 
     global pod_names
@@ -268,17 +254,34 @@ def setup():
 
 
 
-def delmanager():
+def delete_manager():
     restart_manager(namespace, pod_names)
 
-def getlogs():
-    choice = input("Extract Logs from existing PODs(1) or Restart & Extract Logs(2)? : ")
+def get_logs():
+    print_green("\nYou have two options for fetching logs:")
+    print("  1. Get logs from CURRENTLY RUNNING pods.")
+    print("  2. RESTART pods and get their startup logs.")
+    choice = input("\nPlease choose an option [1/2]: ")
     if choice == "1":
         extract_logs(namespace, pod_names, container_name)
     elif choice == "2":
         restart_and_extract_logs(namespace, pod_names, container_name)
     else:
-        print('Please Choose the correct option using the INTEGERS')
+        print_red('Invalid option. Please enter 1 or 2.')
 
 def restart_all_gc():
-    restart_all_and_extract_logs(namespace, pod_names, container_name)
+    print_red("\nWARNING: The 'getcache' action is about to delete and restart ALL manager pods")
+    print_red(f"in the '{namespace}' namespace to capture their initial startup logs.")
+    
+    try:
+        confirm = input("Are you sure you want to proceed? (yes/no): ").lower()
+    except KeyboardInterrupt:
+        print_yellow("\nOperation cancelled by user.")
+        sys.exit(1)
+
+    if confirm in ['yes', 'y']:
+        print_green("Proceeding with pod restart and fetching ...")
+        restart_all_and_extract_logs(namespace, pod_names, container_name)
+    else:
+        print_yellow("Operation cancelled.")
+        sys.exit(0)
